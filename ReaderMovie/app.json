@@ -1,0 +1,8 @@
+{
+  "pages":[
+    "pages/wekcome/wekcome"
+  ],
+  "window":{
+      "navigationBarBackgroundColor": "#b3d4db"
+  }
+}
