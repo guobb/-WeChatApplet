@@ -1,6 +1,7 @@
 {
   "pages":[
-    "pages/wekcome/wekcome"
+    "pages/wekcome/wekcome",
+     "pages/posts/post"
   ],
   "window":{
       "navigationBarBackgroundColor": "#b3d4db"
