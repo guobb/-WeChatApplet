@@ -1,7 +1,7 @@
 <template name="postItem">
   <view class="post-container">
     <view class="post-author-date">
-      <image class="post-author" src="{{item.avatar}}"></image>
+      <image class="post-author" src="{{avatar}}"></image>
       <text class="post-date">{{data}}</text>
     </view>
     <text class="post-title">{{title}}</text>
