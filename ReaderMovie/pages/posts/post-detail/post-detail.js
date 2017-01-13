@@ -1,10 +1,12 @@
 var postsData = require('../../../data/posts-data.js')
+var app = getApp();
 
 Page({
     data: {
-        
+        isPlayingMusic:false
     },
     onLoad: function(option){
+    
         var postId = option.id;
         this.data.currentPostId = postId;
         var postData = postsData.postList[postId];
@@ -28,10 +30,60 @@ Page({
             postsCollected[postId] = false;
             wx.setStorageSync('posts_collected',postsCollected);
         }
+
+       if(app.globalData.g_isPlayingMusic && app.globalData.g_currentMusicPostId===postId){
+           //this.data.isPlayingMusic = true;
+           this.setData({
+               isPlayingMusic: true
+           })
+       } 
+       this.setAudioMonitor();
       
     },
 
+    setAudioMonitor: function (){
+        var that = this;
+        wx.onBackgroundAudioPlay(function(){
+            that.setData({
+                isPlayingMusic : true
+            })
+            app.globalData.g_isPlayingMusic = true;
+            app.globalData.g_currentMusicPostId = that.data.currentPostId;
+        })
+
+        wx.onBackgroundAudioPause(function(){
+            that.setData({
+                isPlayingMusic : false
+            })
+            app.globalData.g_isPlayingMusic = false;
+            app.globalData.g_currentMusicPostId = null;
+        })
+    },
+
     onColletionTap:function(event){
+       //同步方法调用
+       this.getPostsCollectedSyc();
+       //异步方法调用
+       //this.getPostsCollectedAsy();
+    },
+    // 异步方法
+    getPostsCollectedAsy: function(){
+        var that = this;
+        wx.getStorage({
+            key:"posts_collected",
+            success: function(res){
+                var postsCollected = res.data;
+                var postCollected = postsCollected[that.data.currentPostId];
+                // 收藏变成未收藏，未收藏变为收藏
+                postCollected = !postCollected;
+
+                postsCollected[that.data.currentPostId] = postCollected;
+                that.showModal(postsCollected, postCollected);
+            }
+        })
+    },
+    // 同步方法
+    getPostsCollectedSyc: function(){
         var postsCollected = wx.getStorageSync('posts_collected');
         var postCollected = postsCollected[this.data.currentPostId];
         // 收藏变成未收藏，未收藏变为收藏
@@ -97,5 +149,32 @@ Page({
                })
            }
        })
-   }
+   },
+
+    onMudicTap: function(event){
+        var currentPostId = this.data.currentPostId;
+        var postData = postsData.postList[currentPostId]
+
+        var isPlayingMusic = this.data.isPlayingMusic;
+        if(isPlayingMusic){
+            wx.pauseBackgroundAudio();
+            this.setData({
+                isPlayingMusic:false
+            })
+           // this.data.isPlayingMuisc = false;
+        }
+        else{
+             wx.playBackgroundAudio({
+                dataUrl: postData.music.url,
+                title: postData.music.title,
+                coverImg: postData.music.coverImg,
+             })
+             this.setData({
+                 isPlayingMusic: true
+             })
+             //this.data.isPlayingMuisc = true;
+        }
+       
+        
+    }   
 })
