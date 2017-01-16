@@ -18,6 +18,15 @@ Page({
     this.getMovieListData(comingSoonUrl, "comingSon","即将上映");
     this.getMovieListData(top250Url, "top250","豆瓣top250");
   },
+
+  onMoreTop: function(event){
+    var category = event.currentTarget.dataset.category;
+    //console.log(category)
+    wx.navigateTo({
+      url: 'more-movie/more-movie?category='+ category,
+  
+    })
+  },
   getMovieListData: function(url, settedKey, catetoryTitle){
     var that = this;
     // 页面初始化 options为页面跳转所带来的参数
@@ -48,7 +57,7 @@ Page({
     var movie = [];
     for(var idx in moviesDouban.subjects){
         var subject = moviesDouban.subjects[idx];
-        console.log(subject)
+        //console.log(subject)
         var title = subject.title;
         if(title.length >= 6){
           title = title.substring(0,6) + '...';
