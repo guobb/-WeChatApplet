@@ -7,7 +7,10 @@ Page({
   data:{
     inTheaters:{},
     comingSon:{},
-    top250:{}
+    top250:{},
+    searchResult:{},
+    containerShow:true,
+    searchPanelShow: false
   },
   onLoad:function(event){
     var inTheatersUrl = app.globalData.doubanBase +  "/v2/movie/in_theaters"+"?start=0&count=3";
@@ -27,6 +30,15 @@ Page({
   
     })
   },
+
+  onMovieTap: function(event){
+    var movieId = event.currentTarget.dataset.movieId;
+    wx.navigateTo({
+          url: 'movie-detail/movie-detail?id=' + movieId,
+      
+        })
+  },
+
   getMovieListData: function(url, settedKey, catetoryTitle){
     var that = this;
     // 页面初始化 options为页面跳转所带来的参数
@@ -38,8 +50,7 @@ Page({
         "Content-Type":"application/xml"
       },
       success: function(res){
-        // success
-        console.log(res)
+      
         that.processDoubanData(res.data,settedKey, catetoryTitle);
       },
       fail: function() {
@@ -51,6 +62,29 @@ Page({
       }
     })
 
+  },
+  
+  onCancelImgTap: function(event){
+    this.setData({
+      containerShow:true,
+      searchPanelShow: false,
+      searchResult:{}
+    })
+  },
+
+  onBindFocus:function(event){
+    //console.log("show search")
+
+    this.setData({
+      containerShow: false,
+      searchPanerShow: true
+    })
+  },
+
+  onBindChange:function(event){
+    var text = event.detail.value;
+    var searchUrl = app.globalData.doubanBase +  "/v2/movie/search?q=" +text;
+    this.getMovieListData(searchUrl, 'searchResult', "")
   },
 
   processDoubanData:function(moviesDouban, settedKey, catetoryTitle){
